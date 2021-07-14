@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ButtonControl from "../Controls/ButtonControl";
+import DialogControl from "../Controls/DialogControl";
 import InputControl from "../Controls/InputControl";
+import { getSingleBook } from "../Services/useAxios";
 import { Form, useForm } from "../Services/useForm";
 import { useStyles } from "./BookForm.style";
 
@@ -12,16 +14,27 @@ const initialValues = {
   bookGenre: "",
 };
 
-function BookForm({ getBooks, onDialogToggle, onBookId, onSetBookId }) {
+function BookForm({
+  getBooks,
+  onDialogToggle,
+  onBookId,
+  onSetBookId,
+  openDialog,
+  setOpenDialog,
+  singleBookResponse,
+}) {
   const classes = useStyles();
   const [errors, setErrors] = useState({});
+  // const [openDialog, setOpenDialog] = useState(false);
 
   const validate = (fieldValues = bookData) => {
     let validation = { ...errors }; // specifies that to exists all other error messages if we type in another input
 
     if ("bookTitle" in fieldValues) {
       validation.bookTitle = fieldValues.bookTitle
-        ? ""
+        ? fieldValues.bookTitle.length < 3
+          ? "Must be 3 characters!"
+          : ""
         : "This field is required";
     }
     if ("bookPrice" in fieldValues) {
@@ -56,27 +69,42 @@ function BookForm({ getBooks, onDialogToggle, onBookId, onSetBookId }) {
     true,
     validate
   );
-  // const bookId = JSON.parse(localStorage.getItem("bookId"));
 
   // populating on the form i.e old values
   useEffect(() => {
     console.log("In get book useeefcct");
-    axios
-      .get(`http://localhost:5000/books/retreivebookbyid/${onBookId}`)
-      .then((response) => {
-        console.log("Single Book Response:", response);
+    (async () => {
+      try {
+        const response = await getSingleBook(onBookId);
         setBookData(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.log("Error:", error);
-      });
-  }, []);
+      }
+    })();
+
+    // axios
+    //   .get(`http://localhost:5000/books/retreivebookbyid/${onBookId}`)
+    //   .then((response) => {
+    //     console.log("Single Book Response:", response);
+    //     setBookData(response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error:", error);
+    //   });
+    // setBookData(singleBookResponse);
+  }, [singleBookResponse]);
 
   const bookDetails = {
     bookTitle: bookData?.bookTitle,
     bookPrice: bookData?.bookPrice,
     bookAuthor: bookData?.bookAuthor,
     bookGenre: bookData?.bookGenre,
+  };
+
+  const handleResetForm = () => {
+    console.log("In handle Reset Form:");
+    setBookData({ ...initialValues });
+    setErrors({});
   };
 
   const handleFormSubmit = (event) => {
@@ -98,9 +126,8 @@ function BookForm({ getBooks, onDialogToggle, onBookId, onSetBookId }) {
           .catch((error) => {
             console.log("Error Put:", error);
           });
-
-        // localStorage.removeItem("bookId");
         onSetBookId("");
+        handleResetForm();
       }
       // For Post Request
       else {
@@ -114,55 +141,69 @@ function BookForm({ getBooks, onDialogToggle, onBookId, onSetBookId }) {
           .catch((error) => {
             console.log("Error:", error);
           });
+        handleResetForm();
       }
       onDialogToggle();
     }
   };
 
-  console.log("bookData:", bookData);
+  console.log("singleBookResponse:", singleBookResponse);
   return (
     <div>
-      <Form onSubmit={handleFormSubmit}>
-        <div className={classes.formContent}>
-          <InputControl
-            label="Title"
-            name="bookTitle"
-            onChange={handleInputChange}
-            value={bookData.bookTitle}
-            error={errors.bookTitle}
-          />
-          <InputControl
-            label="Price"
-            name="bookPrice"
-            onChange={handleInputChange}
-            value={bookData.bookPrice}
-            error={errors.bookPrice}
-          />
-          <InputControl
-            label="Author"
-            name="bookAuthor"
-            onChange={handleInputChange}
-            value={bookData.bookAuthor}
-            error={errors.bookAuthor}
-          />
-          <InputControl
-            label="Genre"
-            name="bookGenre"
-            onChange={handleInputChange}
-            value={bookData.bookGenre}
-            error={errors.bookGenre}
-          />
+      <DialogControl
+        title="Add Book Details"
+        openPopUp={openDialog}
+        setOpenPopup={setOpenDialog}
+        handleResetForm={handleResetForm}
+        setErrors={setErrors}
+        onCloseDialog={() => {
+          setOpenDialog(false);
+          handleResetForm();
+        }}
+      >
+        <Form onSubmit={handleFormSubmit}>
+          <div className={classes.formContent}>
+            <InputControl
+              label="Title"
+              name="bookTitle"
+              onChange={handleInputChange}
+              value={bookData.bookTitle}
+              error={errors?.bookTitle}
+              autoFocus
+            />
+            <InputControl
+              label="Price"
+              name="bookPrice"
+              onChange={handleInputChange}
+              value={bookData.bookPrice}
+              error={errors?.bookPrice}
+            />
+            <InputControl
+              label="Author"
+              name="bookAuthor"
+              onChange={handleInputChange}
+              value={bookData.bookAuthor}
+              error={errors?.bookAuthor}
+            />
+            <InputControl
+              label="Genre"
+              name="bookGenre"
+              onChange={handleInputChange}
+              value={bookData.bookGenre}
+              error={errors?.bookGenre}
+            />
 
-          <ButtonControl
-            className={classes.buttonControl}
-            type="submit"
-            variant="contained"
-            color="primary"
-            size="small"
-            text="Submit"
-          />
-        </div>
-      </Form>
+            <ButtonControl
+              className={classes.buttonControl}
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="small"
+              text="Submit"
+            />
+          </div>
+        </Form>
+      </DialogControl>
     </div>
   );
 }
