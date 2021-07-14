@@ -9,7 +9,6 @@ export default function InputControl({
   error = null,
   ...rest
 }) {
-  console.log("Error:",error);
   return (
     <div>
       <TextField

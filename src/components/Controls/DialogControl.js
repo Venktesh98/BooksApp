@@ -14,6 +14,8 @@ export default function DialogControl({
   openPopUp,
   setOpenPopup,
   onCloseDialog,
+  handleResetForm,
+  setErrors
 }) {
   const classes = useStyles();
   return (
@@ -36,7 +38,11 @@ export default function DialogControl({
             </Typography>
             <CloseIcon
               style={{ color: "black", cursor: "pointer" }}
-              onClick={() => setOpenPopup(false)}
+              onClick={() => {
+                setOpenPopup(false);
+                handleResetForm();
+                setErrors();
+              }}
             />
           </div>
         </DialogTitle>
