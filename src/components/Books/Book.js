@@ -10,10 +10,12 @@ import BookForm from "./BookForm";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { Paper } from "@material-ui/core";
+import { getSingleBook } from "../Services/useAxios";
 
 function Book() {
   const classes = useStyles();
   const [bookResponse, setBookResponse] = useState("");
+  const [singleBookResponse, setSingleBookResponse] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [bookId, setBookId] = useState("");
 
@@ -35,13 +37,36 @@ function Book() {
       });
   };
 
+  //   fetch book by id
+  const fetchSingleBook = async (id) => {
+    console.log("In fetchSingle Book");
+    // axios
+    //   .get(`http://localhost:5000/books/retreivebookbyid/${id}`)
+    //   .then((response) => {
+    //     console.log("Single Book Response:", response);
+    //     setSingleBookResponse(response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error:", error);
+    //   });
+
+    try {
+      const response = await getSingleBook(id);
+      setSingleBookResponse(response.data);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
   const handleOpenDialog = () => {
     setOpenDialog(!openDialog);
   };
 
   //  opens dialog for edit
   const openPopUpForEdit = (id) => {
+    console.log("openPopUpForEdit");
     // localStorage.setItem("bookId", JSON.stringify(id));
+    fetchSingleBook(id);
     setOpenDialog(true);
     setBookId(id);
   };
@@ -93,7 +118,7 @@ function Book() {
 
   return (
     <div>
-      <DialogControl
+      {/* <DialogControl
         title="Add Book Details"
         openPopUp={openDialog}
         setOpenPopup={setOpenDialog}
@@ -105,7 +130,17 @@ function Book() {
           onBookId={bookId}
           onSetBookId={setBookId}
         />
-      </DialogControl>
+      </DialogControl> */}
+
+      <BookForm
+        getBooks={getBooks}
+        onBookId={bookId}
+        onSetBookId={setBookId}
+        openDialog={openDialog}
+        setOpenDialog={setOpenDialog}
+        onDialogToggle={handleOpenDialog}
+        singleBookResponse={singleBookResponse}
+      />
 
       {/* React-Data-Table */}
       <Container className={classes.container}>
