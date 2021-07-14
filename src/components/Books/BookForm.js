@@ -73,15 +73,6 @@ function BookForm({
   // populating on the form i.e old values
   useEffect(() => {
     console.log("In get book useeefcct");
-    (async () => {
-      try {
-        const response = await getSingleBook(onBookId);
-        setBookData(response.data);
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    })();
-
     // axios
     //   .get(`http://localhost:5000/books/retreivebookbyid/${onBookId}`)
     //   .then((response) => {
@@ -91,7 +82,7 @@ function BookForm({
     //   .catch((error) => {
     //     console.log("Error:", error);
     //   });
-    // setBookData(singleBookResponse);
+    setBookData(singleBookResponse);
   }, [singleBookResponse]);
 
   const bookDetails = {

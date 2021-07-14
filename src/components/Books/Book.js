@@ -66,9 +66,9 @@ function Book() {
   const openPopUpForEdit = (id) => {
     console.log("openPopUpForEdit");
     // localStorage.setItem("bookId", JSON.stringify(id));
+    setBookId(id);
     fetchSingleBook(id);
     setOpenDialog(true);
-    setBookId(id);
   };
 
   //  Deletes the data
