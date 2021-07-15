@@ -10,6 +10,7 @@ import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { Paper } from "@material-ui/core";
 import { getSingleBook } from "../Services/useAxios";
+import Error from "../Pages/Error";
 
 const initialValues = {
   bookTitle: "",
@@ -24,6 +25,7 @@ function Book() {
   const [singleBookResponse, setSingleBookResponse] = useState(initialValues);
   const [openDialog, setOpenDialog] = useState(false);
   const [bookId, setBookId] = useState("");
+  const [statusCode, setStatusCode] = useState("");
 
   useEffect(() => {
     getBooks();
@@ -40,6 +42,7 @@ function Book() {
       })
       .catch((error) => {
         console.log("Error:", error);
+        setStatusCode(error.response.status);
       });
   };
 
@@ -110,7 +113,9 @@ function Book() {
     },
   ];
 
-  return (
+  return statusCode == 400 || 404 ? (
+    <Error />
+  ) : (
     <div>
       <BookForm
         getBooks={getBooks}

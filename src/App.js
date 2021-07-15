@@ -1,9 +1,9 @@
 import Navbar from "./components/Navbar/Navbar";
 import Book from "./components/Books/Book";
 import { Route, Switch } from "react-router";
-import About from "./components/About";
-import Contact from "./components/ContactUs";
-import Error from "./components/Error";
+import About from "./components/Pages/About";
+import Contact from "./components/Pages/ContactUs";
+import Error from "./components/Pages/Error";
 
 function App() {
   return (
