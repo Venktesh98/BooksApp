@@ -27,7 +27,7 @@ function Navbar() {
             <IconButton
               edge="start"
               className={classes.menuButton}
-              color="black"
+              color="default"
               aria-label="menu"
               onClick={handleDrawerToggle}
             >
