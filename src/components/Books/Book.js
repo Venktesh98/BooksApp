@@ -113,7 +113,7 @@ function Book() {
     },
   ];
 
-  return statusCode == 400 || 404 ? (
+  return statusCode == 400 ? (
     <Error />
   ) : (
     <div>
