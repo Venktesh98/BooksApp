@@ -3,16 +3,8 @@ import React, { useEffect, useState } from "react";
 import ButtonControl from "../Controls/ButtonControl";
 import DialogControl from "../Controls/DialogControl";
 import InputControl from "../Controls/InputControl";
-import { getSingleBook } from "../Services/useAxios";
 import { Form, useForm } from "../Services/useForm";
 import { useStyles } from "./BookForm.style";
-
-const initialValues = {
-  bookTitle: "",
-  bookPrice: "",
-  bookAuthor: "",
-  bookGenre: "",
-};
 
 function BookForm({
   getBooks,
@@ -22,10 +14,10 @@ function BookForm({
   openDialog,
   setOpenDialog,
   singleBookResponse,
+  initialValues,
 }) {
   const classes = useStyles();
   const [errors, setErrors] = useState({});
-  // const [openDialog, setOpenDialog] = useState(false);
 
   const validate = (fieldValues = bookData) => {
     let validation = { ...errors }; // specifies that to exists all other error messages if we type in another input
@@ -70,18 +62,11 @@ function BookForm({
     validate
   );
 
+  console.log("BookData:", bookData);
+  console.log("SingleBookREsponse:", singleBookResponse);
+
   // populating on the form i.e old values
   useEffect(() => {
-    console.log("In get book useeefcct");
-    // axios
-    //   .get(`http://localhost:5000/books/retreivebookbyid/${onBookId}`)
-    //   .then((response) => {
-    //     console.log("Single Book Response:", response);
-    //     setBookData(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.log("Error:", error);
-    //   });
     setBookData(singleBookResponse);
   }, [singleBookResponse]);
 
@@ -100,7 +85,6 @@ function BookForm({
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-
     if (validate()) {
       // For Put Request
       if (onBookId) {
@@ -158,7 +142,7 @@ function BookForm({
               label="Title"
               name="bookTitle"
               onChange={handleInputChange}
-              value={bookData.bookTitle}
+              value={bookData?.bookTitle}
               error={errors?.bookTitle}
               autoFocus
             />
@@ -166,21 +150,21 @@ function BookForm({
               label="Price"
               name="bookPrice"
               onChange={handleInputChange}
-              value={bookData.bookPrice}
+              value={bookData?.bookPrice}
               error={errors?.bookPrice}
             />
             <InputControl
               label="Author"
               name="bookAuthor"
               onChange={handleInputChange}
-              value={bookData.bookAuthor}
+              value={bookData?.bookAuthor}
               error={errors?.bookAuthor}
             />
             <InputControl
               label="Genre"
               name="bookGenre"
               onChange={handleInputChange}
-              value={bookData.bookGenre}
+              value={bookData?.bookGenre}
               error={errors?.bookGenre}
             />
 
