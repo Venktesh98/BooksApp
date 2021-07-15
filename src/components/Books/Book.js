@@ -3,7 +3,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import ButtonControl from "../Controls/ButtonControl";
-import DialogControl from "../Controls/DialogControl";
 import AddIcon from "@material-ui/icons/Add";
 import { useStyles } from "./Book.style";
 import BookForm from "./BookForm";
@@ -12,10 +11,17 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { Paper } from "@material-ui/core";
 import { getSingleBook } from "../Services/useAxios";
 
+const initialValues = {
+  bookTitle: "",
+  bookPrice: "",
+  bookAuthor: "",
+  bookGenre: "",
+};
+
 function Book() {
   const classes = useStyles();
   const [bookResponse, setBookResponse] = useState("");
-  const [singleBookResponse, setSingleBookResponse] = useState("");
+  const [singleBookResponse, setSingleBookResponse] = useState(initialValues);
   const [openDialog, setOpenDialog] = useState(false);
   const [bookId, setBookId] = useState("");
 
@@ -39,17 +45,6 @@ function Book() {
 
   //   fetch book by id
   const fetchSingleBook = async (id) => {
-    console.log("In fetchSingle Book");
-    // axios
-    //   .get(`http://localhost:5000/books/retreivebookbyid/${id}`)
-    //   .then((response) => {
-    //     console.log("Single Book Response:", response);
-    //     setSingleBookResponse(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.log("Error:", error);
-    //   });
-
     try {
       const response = await getSingleBook(id);
       setSingleBookResponse(response.data);
@@ -65,7 +60,6 @@ function Book() {
   //  opens dialog for edit
   const openPopUpForEdit = (id) => {
     console.log("openPopUpForEdit");
-    // localStorage.setItem("bookId", JSON.stringify(id));
     setBookId(id);
     fetchSingleBook(id);
     setOpenDialog(true);
@@ -118,20 +112,6 @@ function Book() {
 
   return (
     <div>
-      {/* <DialogControl
-        title="Add Book Details"
-        openPopUp={openDialog}
-        setOpenPopup={setOpenDialog}
-        onCloseDialog={() => setOpenDialog(false)}
-      >
-        <BookForm
-          getBooks={getBooks}
-          onDialogToggle={handleOpenDialog}
-          onBookId={bookId}
-          onSetBookId={setBookId}
-        />
-      </DialogControl> */}
-
       <BookForm
         getBooks={getBooks}
         onBookId={bookId}
@@ -140,6 +120,7 @@ function Book() {
         setOpenDialog={setOpenDialog}
         onDialogToggle={handleOpenDialog}
         singleBookResponse={singleBookResponse}
+        initialValues={initialValues}
       />
 
       {/* React-Data-Table */}
