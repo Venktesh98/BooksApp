@@ -12,7 +12,6 @@ export default function DialogControl({
   title,
   children,
   openPopUp,
-  setOpenPopup,
   onCloseDialog,
   handleResetForm,
   setErrors
@@ -39,7 +38,7 @@ export default function DialogControl({
             <CloseIcon
               style={{ color: "black", cursor: "pointer" }}
               onClick={() => {
-                setOpenPopup(false);
+                onCloseDialog()
                 handleResetForm();
                 setErrors();
               }}
