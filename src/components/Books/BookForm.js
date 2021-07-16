@@ -15,6 +15,7 @@ function BookForm({
   setOpenDialog,
   singleBookResponse,
   initialValues,
+  sendNotification,
 }) {
   const classes = useStyles();
   const [errors, setErrors] = useState({});
@@ -83,6 +84,7 @@ function BookForm({
     setErrors({});
   };
 
+  // submits the form data
   const handleFormSubmit = (event) => {
     event.preventDefault();
     if (validate()) {
@@ -103,6 +105,7 @@ function BookForm({
           });
         onSetBookId("");
         handleResetForm();
+        sendNotification("Updated Successfully!", "info");
       }
       // For Post Request
       else {
@@ -117,8 +120,9 @@ function BookForm({
             console.log("Error:", error);
           });
         handleResetForm();
+        sendNotification("Added Successfully!", "success"); // opens Snackbar
       }
-      onDialogToggle();
+      onDialogToggle(); // toggles the Dialog
     }
   };
 
