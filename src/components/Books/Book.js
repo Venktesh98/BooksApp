@@ -11,6 +11,8 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import { Paper } from "@material-ui/core";
 import { getSingleBook } from "../Services/useAxios";
 import Error from "../Pages/Error";
+import { CircularProgress } from "@material-ui/core";
+import NotificationControl from "../Controls/NotificationControl";
 
 const initialValues = {
   bookTitle: "",
@@ -26,9 +28,21 @@ function Book() {
   const [openDialog, setOpenDialog] = useState(false);
   const [bookId, setBookId] = useState("");
   const [statusCode, setStatusCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [dataTable, setDataTable] = useState(true);
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   useEffect(() => {
-    getBooks();
+    setLoading(true); // enables loading
+    setDataTable(false); //disables rendering the datatable untill loading stops
+    setTimeout(() => {
+      getBooks();
+    }, 500);
+    return () => clearInterval();
   }, []);
 
   //  fetches the book
@@ -39,10 +53,13 @@ function Book() {
       .then((response) => {
         console.log("Get Book Response:", response);
         setBookResponse(response);
+        setLoading(false); //loading state
+        setDataTable(true); // sets Datatable to show
       })
       .catch((error) => {
         console.log("Error:", error);
         setStatusCode(error.response.status);
+        setLoading(false);
       });
   };
 
@@ -56,6 +73,7 @@ function Book() {
     }
   };
 
+  // opens Dialog
   const handleOpenDialog = () => {
     setOpenDialog(!openDialog);
   };
@@ -80,6 +98,16 @@ function Book() {
       .catch((error) => {
         console.log("Error:", error);
       });
+    sendNotification("Deleted Successfully!", "error");
+  };
+
+  const sendNotification = (message, type) => {
+    // opens the Snackbar
+    setNotify({
+      isOpen: true,
+      message: message,
+      type: type,
+    });
   };
 
   console.log("Book Resposne:", bookResponse);
@@ -126,6 +154,7 @@ function Book() {
         onDialogToggle={handleOpenDialog}
         singleBookResponse={singleBookResponse}
         initialValues={initialValues}
+        sendNotification={sendNotification}
       />
 
       {/* React-Data-Table */}
@@ -139,14 +168,33 @@ function Book() {
           onClickData={handleOpenDialog}
         />
 
+        {loading ? (
+          <div className={classes.loader}>
+            <CircularProgress color="default" />
+          </div>
+        ) : null}
+
         <Paper className={classes.paper}>
-          <DataTable
-            title="Books App"
-            columns={columns}
-            data={bookResponse?.data}
-          />
+          {dataTable && (
+            <DataTable
+              title="BooksApp"
+              columns={columns}
+              pagination={true}
+              paginationPerPage={5}
+              paginationRowsPerPageOptions={[5, 10]}
+              paginationIconFirstPage
+              paginationIconLastPage
+              noDataComponent
+              highlightOnHover={true}
+              pointerOnHover={true}
+              data={bookResponse?.data}
+            />
+          )}
         </Paper>
       </Container>
+
+      {/* Notification Control */}
+      <NotificationControl notify={notify} setNotify={setNotify} />
     </div>
   );
 }
