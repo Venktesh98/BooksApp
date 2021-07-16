@@ -13,6 +13,7 @@ import { getSingleBook } from "../Services/useAxios";
 import Error from "../Pages/Error";
 import { CircularProgress } from "@material-ui/core";
 import NotificationControl from "../Controls/NotificationControl";
+import DeleteDialogControl from "../Controls/DeleteDialogControl";
 
 const initialValues = {
   bookTitle: "",
@@ -29,7 +30,7 @@ function Book() {
   const [bookId, setBookId] = useState("");
   const [statusCode, setStatusCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [dataTable, setDataTable] = useState(true);
+  const [deleteDialog, setDeleteDialog] = useState(false);
   const [notify, setNotify] = useState({
     isOpen: false,
     message: "",
@@ -38,7 +39,6 @@ function Book() {
 
   useEffect(() => {
     setLoading(true); // enables loading
-    setDataTable(false); //disables rendering the datatable untill loading stops
     setTimeout(() => {
       getBooks();
     }, 500);
@@ -47,14 +47,12 @@ function Book() {
 
   //  fetches the book
   const getBooks = () => {
-    console.log("In Get Books in Book.js");
+    // setLoading(true);
     axios
       .get("http://localhost:5000/books/retreivebooks")
       .then((response) => {
-        console.log("Get Book Response:", response);
         setBookResponse(response);
         setLoading(false); //loading state
-        setDataTable(true); // sets Datatable to show
       })
       .catch((error) => {
         console.log("Error:", error);
@@ -80,27 +78,37 @@ function Book() {
 
   //  opens dialog for edit
   const openPopUpForEdit = (id) => {
-    console.log("openPopUpForEdit");
     setBookId(id);
     fetchSingleBook(id);
-    setOpenDialog(true);
+    handleOpenDialog();
+  };
+
+  // opens the Dialog for Delete
+  const openDialogForDelete = () => {
+    setDeleteDialog(!deleteDialog);
   };
 
   //  Deletes the data
   const handleDelete = (bookId) => {
-    console.log("In handle Delete", bookId);
-    axios
-      .delete(`http://localhost:5000/books/deletebook/${bookId}`)
-      .then((response) => {
-        console.log("Deleet:response:", response);
-        getBooks();
-      })
-      .catch((error) => {
-        console.log("Error:", error);
-      });
-    sendNotification("Deleted Successfully!", "error");
+    setBookId(bookId);
+    openDialogForDelete();
   };
 
+  const deleteItemFromList = (deleteBookId) => {
+    if (deleteBookId) {
+      axios
+        .delete(`http://localhost:5000/books/deletebook/${bookId}`)
+        .then((response) => {
+          sendNotification("Deleted Successfully!", "error");
+          getBooks();
+        })
+        .catch((error) => {
+          console.log("Error:", error);
+        });
+    }
+  };
+
+  // send the notification
   const sendNotification = (message, type) => {
     // opens the Snackbar
     setNotify({
@@ -109,8 +117,6 @@ function Book() {
       type: type,
     });
   };
-
-  console.log("Book Resposne:", bookResponse);
 
   const columns = [
     {
@@ -134,8 +140,14 @@ function Book() {
       name: "Actions",
       cell: (row) => (
         <div>
-          <EditOutlinedIcon onClick={() => openPopUpForEdit(row._id)} />
-          <DeleteOutlineIcon onClick={() => handleDelete(row._id)} />
+          <EditOutlinedIcon
+            color="primary"
+            onClick={() => openPopUpForEdit(row._id)}
+          />
+          <DeleteOutlineIcon
+            color="secondary"
+            onClick={() => handleDelete(row._id)}
+          />
         </div>
       ),
     },
@@ -145,13 +157,22 @@ function Book() {
     <Error />
   ) : (
     <div>
+      {deleteDialog && (
+        <DeleteDialogControl
+          title="Are You Sure?"
+          openPopupDialog={deleteDialog}
+          onCloseDialog={openDialogForDelete}
+          onSetBookIdForDelete={bookId}
+          deleteItemFromList={deleteItemFromList}
+        />
+      )}
+
       <BookForm
         getBooks={getBooks}
         onBookId={bookId}
         onSetBookId={setBookId}
         openDialog={openDialog}
-        setOpenDialog={setOpenDialog}
-        onDialogToggle={handleOpenDialog}
+        handleOpenDialog={handleOpenDialog}
         singleBookResponse={singleBookResponse}
         initialValues={initialValues}
         sendNotification={sendNotification}
@@ -172,10 +193,8 @@ function Book() {
           <div className={classes.loader}>
             <CircularProgress color="default" />
           </div>
-        ) : null}
-
-        <Paper className={classes.paper}>
-          {dataTable && (
+        ) : (
+          <Paper className={classes.paper} elevation={2}>
             <DataTable
               title="BooksApp"
               columns={columns}
@@ -189,8 +208,8 @@ function Book() {
               pointerOnHover={true}
               data={bookResponse?.data}
             />
-          )}
-        </Paper>
+          </Paper>
+        )}
       </Container>
 
       {/* Notification Control */}

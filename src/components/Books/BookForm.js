@@ -8,11 +8,10 @@ import { useStyles } from "./BookForm.style";
 
 function BookForm({
   getBooks,
-  onDialogToggle,
   onBookId,
   onSetBookId,
   openDialog,
-  setOpenDialog,
+  handleOpenDialog,
   singleBookResponse,
   initialValues,
   sendNotification,
@@ -63,9 +62,6 @@ function BookForm({
     validate
   );
 
-  console.log("BookData:", bookData);
-  console.log("SingleBookREsponse:", singleBookResponse);
-
   // populating on the form i.e old values
   useEffect(() => {
     setBookData(singleBookResponse);
@@ -79,7 +75,6 @@ function BookForm({
   };
 
   const handleResetForm = () => {
-    console.log("In handle Reset Form:");
     setBookData({ ...initialValues });
     setErrors({});
   };
@@ -90,14 +85,12 @@ function BookForm({
     if (validate()) {
       // For Put Request
       if (onBookId) {
-        console.log("PUT REquest");
         axios
           .put(
             `http://localhost:5000/books/updatebook/${onBookId}`,
             bookDetails
           )
           .then((response) => {
-            console.log("Put response:", response);
             getBooks();
           })
           .catch((error) => {
@@ -109,11 +102,9 @@ function BookForm({
       }
       // For Post Request
       else {
-        console.log("POst Request");
         axios
           .post("http://localhost:5000/books/addbook", bookDetails)
           .then((response) => {
-            console.log("Response Book Post:", response);
             getBooks();
           })
           .catch((error) => {
@@ -122,21 +113,19 @@ function BookForm({
         handleResetForm();
         sendNotification("Added Successfully!", "success"); // opens Snackbar
       }
-      onDialogToggle(); // toggles the Dialog
+      handleOpenDialog(); // toggles the Dialog
     }
   };
 
-  console.log("singleBookResponse:", singleBookResponse);
   return (
     <div>
       <DialogControl
         title="Add Book Details"
         openPopUp={openDialog}
-        setOpenPopup={setOpenDialog}
         handleResetForm={handleResetForm}
         setErrors={setErrors}
         onCloseDialog={() => {
-          setOpenDialog(false);
+          handleOpenDialog();
           handleResetForm();
         }}
       >
