@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router";
 import About from "./components/Pages/About";
 import Contact from "./components/Pages/ContactUs";
 import Error from "./components/Pages/Error";
+import Footer from "./components/Footer/PageFooter";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/contact" component={Contact} exact />
         <Route component={Error} />
       </Switch>
+      <Footer />
     </div>
   );
 }

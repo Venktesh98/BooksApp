@@ -99,7 +99,7 @@ function Book() {
       axios
         .delete(`http://localhost:5000/books/deletebook/${bookId}`)
         .then((response) => {
-          sendNotification("Deleted Successfully!", "error");
+          sendNotification("Book Deleted Successfully!", "error");
           getBooks();
         })
         .catch((error) => {

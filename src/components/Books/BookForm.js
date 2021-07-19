@@ -98,7 +98,7 @@ function BookForm({
           });
         onSetBookId("");
         handleResetForm();
-        sendNotification("Updated Successfully!", "info");
+        sendNotification("Book Updated Successfully!", "info");
       }
       // For Post Request
       else {
@@ -111,7 +111,7 @@ function BookForm({
             console.log("Error:", error);
           });
         handleResetForm();
-        sendNotification("Added Successfully!", "success"); // opens Snackbar
+        sendNotification("Book Added Successfully!", "success"); // opens Snackbar
       }
       handleOpenDialog(); // toggles the Dialog
     }
@@ -140,6 +140,7 @@ function BookForm({
               autoFocus
             />
             <InputControl
+              type="number"
               label="Price"
               name="bookPrice"
               onChange={handleInputChange}
