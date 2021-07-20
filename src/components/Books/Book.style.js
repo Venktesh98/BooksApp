@@ -5,11 +5,17 @@ export const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     marginTop: "4rem",
+    height:"55.5vh",
+    // overflow:"hidden",
+    // overflow:"auto"
   },
   container: {
     marginTop: "0.8rem",
   },
-  paper: {
-    marginBottom: "1rem",
-  },
+  // paper: {
+  //   // position:"relative"
+  //   // height: "60vh",
+  //   // marginBottom: "1rem",
+  //   // overflowY: "auto",
+  // },
 }));

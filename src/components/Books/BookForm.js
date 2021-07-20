@@ -106,12 +106,17 @@ function BookForm({
           .post("http://localhost:5000/books/addbook", bookDetails)
           .then((response) => {
             getBooks();
+            sendNotification("Book Added Successfully!", "success"); // opens Snackbar
           })
           .catch((error) => {
             console.log("Error:", error);
+            if (error.response.status == 400) {
+              console.log("In Error if");
+              // setErrors({ errMessage: "Book Already Exists!" });
+              sendNotification("Book Already Exists!", "info");
+            }
           });
         handleResetForm();
-        sendNotification("Book Added Successfully!", "success"); // opens Snackbar
       }
       handleOpenDialog(); // toggles the Dialog
     }
